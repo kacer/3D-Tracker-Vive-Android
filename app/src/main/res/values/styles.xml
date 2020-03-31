@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/circular_book</item>
+        <item name="fontFamily">@font/circular_book</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.TextAppearance.Item3DTracker.Base" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Item3DTracker.Title" parent="AppTheme.TextAppearance.Item3DTracker.Base">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Item3DTracker.Text" parent="AppTheme.TextAppearance.Item3DTracker.Base">
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+
+    <style name="AppTheme.Widget.Item3DTracker.Button" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@android:color/black</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+</resources>
