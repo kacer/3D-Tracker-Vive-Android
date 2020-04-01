@@ -179,7 +179,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         // remove not connected trackers from list
         int countBeforeRemove = devices.size();
         Iterables.removeIf(devices, e -> !e.isConnected());
-        notifyItemRangeRemoved(0, countBeforeRemove);
+        notifyItemRangeRemoved(0, countBeforeRemove == 0 ? 1 : countBeforeRemove); // if message is there remove it too
         scanner.startScanning();
     }
 
@@ -219,9 +219,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void handleDeviceDiscovered(Intent intent) {
         PositionTracker tracker = intent.getParcelableExtra(DevicesScanner.KEY_DEVICE_POSITION_TRACKER);
 
-        int position = devices.size();
         devices.add(tracker);
-        notifyItemInserted(position);
+        notifyDataSetChanged();
     }
 
     private void handleDescriptorWrite(Intent intent) {
