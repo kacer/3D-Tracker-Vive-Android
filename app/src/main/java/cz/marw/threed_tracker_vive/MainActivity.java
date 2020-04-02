@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.marw.threed_tracker_vive.connectivity.DevicesScanner;
 import cz.marw.threed_tracker_vive.connectivity.DiscoveryFragment;
+import cz.marw.threed_tracker_vive.rendering.RenderingFragment;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private int itemSelected;
     private Fragment discoveryFragment;
+    private Fragment renderingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity
             discoveryFragment = new DiscoveryFragment();
         }*/
         discoveryFragment = new DiscoveryFragment();
+        renderingFragment = new RenderingFragment();
 
         openFragment(discoveryFragment);
     }
@@ -135,7 +138,7 @@ public class MainActivity extends AppCompatActivity
         if (itemSelected == R.id.nav_trackers) {
             openFragment(discoveryFragment);
         } else if (itemSelected == R.id.nav_renderer) {
-            //openFragment(testFragment);
+            openFragment(renderingFragment);
         }
     }
 

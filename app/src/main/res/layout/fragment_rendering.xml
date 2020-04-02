@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cz.marw.threed_tracker_vive.rendering.SceneGLSurfaceView
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/sceneGLSurfaceView"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
