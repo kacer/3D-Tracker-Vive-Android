@@ -21,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.marw.threed_tracker_vive.R;
 import cz.marw.threed_tracker_vive.model.PositionTracker;
+import cz.marw.threed_tracker_vive.util.PreferenceManager;
 import java9.lang.Iterables;
 import java9.util.stream.StreamSupport;
 
@@ -49,8 +50,11 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.deviceStateTextView)
         TextView state;
 
-        @BindView(R.id.actionButton)
-        MaterialButton action;
+        @BindView(R.id.connectButton)
+        MaterialButton connect;
+
+        @BindView(R.id.sendGeometryButton)
+        MaterialButton sendGeometry;
 
         @BindView(R.id.itemBackground)
         View background;
@@ -58,32 +62,57 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            action.setOnClickListener(this);
+            connect.setOnClickListener(this);
+            sendGeometry.setOnClickListener(this);
         }
 
         public void bind(PositionTracker tracker) {
             connected.setText((tracker.isConnected()) ? R.string.connected : R.string.disconnected);
-            action.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
+            connect.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
             name.setText(context.getString(R.string.device_name_formatted, tracker.getDevice().getName()));
             mac.setText(context.getString(R.string.device_mac_addr_formatted, tracker.getDevice().getAddress()));
 
-            String stateStr = (tracker.isReceivingCoordinates()) ?
-                    context.getString(R.string.receiving_coordinates) : context.getString(R.string.nothing);
+            String stateStr = "";
+            switch(tracker.getState()) {
+                case UNKNOWN:
+                    stateStr = context.getString(R.string.unknown);
+                    break;
+                case GEOMETRY_NOT_SET:
+                    stateStr = context.getString(R.string.geometry_is_not_set);
+                    break;
+                case GEOMETRY_IS_SET:
+                    stateStr = context.getString(R.string.geometry_is_set);
+                    break;
+                case RECEIVING_COORDINATES:
+                    stateStr = context.getString(R.string.receiving_coordinates);
+                    break;
+            }
             state.setText(context.getString(R.string.device_state, stateStr.toLowerCase()));
             background.setBackgroundResource(tracker.getColor());
+            if(tracker.isConnected())
+                sendGeometry.setVisibility((PreferenceManager.isUserAdmin()) ? View.VISIBLE : View.INVISIBLE);
+            else
+                sendGeometry.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onClick(View v) {
             PositionTracker tracker = devices.get(getAdapterPosition());
-            if(tracker.isConnected()) {
-                // disconnect
-                action.setText(R.string.disconnecting);
-                scanner.disconnectFromDevice(tracker.getDevice());
-            } else {
-                // connect
-                action.setText(R.string.connecting);
-                scanner.connectToDevice(tracker.getDevice(), context);
+            switch(v.getId()) {
+                case R.id.connectButton:
+                    if(tracker.isConnected()) {
+                        // disconnect
+                        connect.setText(R.string.disconnecting);
+                        scanner.disconnectFromDevice(tracker.getDevice());
+                    } else {
+                        // connect
+                        connect.setText(R.string.connecting);
+                        scanner.connectToDevice(tracker.getDevice(), context);
+                    }
+                    break;
+                case R.id.sendGeometryButton:
+                    scanner.sendGeometryToTracker(tracker.getDevice());
+                    break;
             }
         }
     }
@@ -112,7 +141,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         devicesScannerReceiver = new DevicesScannerBroadcastReceiver();
         scanner.registerBroadcastReceiver(devicesScannerReceiver, DevicesScanner.ACTION_CONNECTION_STATE,
-                DevicesScanner.ACTION_DEVICE_DISCOVERED, DevicesScanner.ACTION_DESCRIPTOR_WRITE,
+                DevicesScanner.ACTION_DEVICE_DISCOVERED, DevicesScanner.ACTION_DEVICE_STATE_CHANGED,
                 DevicesScanner.ACTION_SCANNING_STATE);
     }
 
@@ -195,8 +224,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else if(DevicesScanner.ACTION_DEVICE_DISCOVERED.equals(action)) {
                 handleDeviceDiscovered(intent);
 
-            } else if(DevicesScanner.ACTION_DESCRIPTOR_WRITE.equals(action)) {
-                handleDescriptorWrite(intent);
+            } else if(DevicesScanner.ACTION_DEVICE_STATE_CHANGED.equals(action)) {
+                handleDeviceStateChanged(intent);
 
             } else if(DevicesScanner.ACTION_SCANNING_STATE.equals(action)) {
                 handleScanningState(intent);
@@ -211,7 +240,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 .filter(e -> e.getDevice().equals(tracker.getDevice()))
                 .forEach((e) -> {
                     e.setConnected(tracker.isConnected());
-                    e.setReceivingCoordinates(tracker.isReceivingCoordinates());
+                    e.setState(tracker.getState());
                     notifyItemChanged(devices.indexOf(e));
                 });
     }
@@ -223,13 +252,13 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    private void handleDescriptorWrite(Intent intent) {
+    private void handleDeviceStateChanged(Intent intent) {
         PositionTracker tracker = intent.getParcelableExtra(DevicesScanner.KEY_DEVICE_POSITION_TRACKER);
 
         StreamSupport.stream(devices)
                 .filter(e -> e.getDevice().equals(tracker.getDevice()))
                 .forEach((e) -> {
-                    e.setReceivingCoordinates(tracker.isReceivingCoordinates());
+                    e.setState(tracker.getState());
                     notifyItemChanged(devices.indexOf(e));
                 });
     }

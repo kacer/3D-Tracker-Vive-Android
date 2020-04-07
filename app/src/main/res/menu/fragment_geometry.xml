@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/itemSwapGeometry"
+        android:icon="@drawable/ic_swap_horizontal_white"
+        android:title="@string/swap_geometry"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/itemAddGeometry"
+        android:icon="@drawable/ic_plus_white"
+        android:title="@string/add"
+        app:showAsAction="always"/>
+</menu>

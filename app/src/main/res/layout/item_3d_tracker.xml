@@ -11,19 +11,19 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/itemBackground"
-        android:background="@drawable/item_3d_tracker_blue"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/item_3d_tracker_blue">
 
         <TextView
             android:id="@+id/connectionStateTextView"
+            style="@style/AppTheme.TextAppearance.Item3DTracker.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:text="@string/connected"
-            style="@style/AppTheme.TextAppearance.Item3DTracker.Title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,21 +31,21 @@
 
         <TextView
             android:id="@+id/deviceNameTextView"
+            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/device_name_formatted"
-            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             app:layout_constraintStart_toStartOf="@+id/connectionStateTextView"
             app:layout_constraintTop_toBottomOf="@+id/connectionStateTextView" />
 
         <TextView
             android:id="@+id/deviceMacTextView"
+            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/device_mac_addr_formatted"
-            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/deviceNameTextView"
             app:layout_constraintTop_toBottomOf="@+id/deviceNameTextView"
@@ -53,33 +53,47 @@
 
         <TextView
             android:id="@+id/deviceStateTextView"
+            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/device_state"
-            style="@style/AppTheme.TextAppearance.Item3DTracker.Text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/deviceMacTextView"
             app:layout_constraintTop_toBottomOf="@+id/deviceMacTextView"
             app:layout_constraintVertical_bias="0.0" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/actionButton"
+            android:id="@+id/connectButton"
             style="@style/AppTheme.Widget.Item3DTracker.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:text="@string/disconnect"
             app:cornerRadius="@dimen/button_corner_radius"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/sendGeometryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/deviceNameTextView"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendGeometryButton"
+            style="@style/AppTheme.Widget.Item3DTracker.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:cornerRadius="@dimen/button_corner_radius"
+            app:icon="@drawable/ic_matrix"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/connectButton"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/connectButton"
+            app:layout_constraintTop_toBottomOf="@+id/connectButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
 

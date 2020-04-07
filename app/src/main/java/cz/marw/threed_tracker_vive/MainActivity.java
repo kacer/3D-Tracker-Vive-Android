@@ -1,12 +1,16 @@
 package cz.marw.threed_tracker_vive;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -17,13 +21,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.marw.threed_tracker_vive.connectivity.DevicesScanner;
 import cz.marw.threed_tracker_vive.connectivity.DiscoveryFragment;
+import cz.marw.threed_tracker_vive.geometry.GeometryFragment;
 import cz.marw.threed_tracker_vive.rendering.RenderingFragment;
+import cz.marw.threed_tracker_vive.util.PreferenceManager;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener,
+        View.OnClickListener {
 
     private static final String FRAGMENT_KEY = "fragment";
 
@@ -36,6 +45,10 @@ public class MainActivity extends AppCompatActivity
     private int itemSelected;
     private Fragment discoveryFragment;
     private Fragment renderingFragment;
+
+    private int clickCounter;
+    private Handler clickHandler = new Handler();
+    private static final int MAX_CLICK_DELAY = 2000; // 2s
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +77,8 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_trackers);
+        if(PreferenceManager.isUserAdmin())
+            navigationView.getMenu().findItem(R.id.nav_geometry).setVisible(true);
 
         /*if(savedInstanceState != null) {
             // restore the fragment's instance
@@ -135,10 +150,20 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
-        if (itemSelected == R.id.nav_trackers) {
-            openFragment(discoveryFragment);
-        } else if (itemSelected == R.id.nav_renderer) {
-            openFragment(renderingFragment);
+        switch(itemSelected) {
+            case R.id.nav_trackers:
+                openFragment(discoveryFragment);
+                break;
+            case R.id.nav_geometry:
+                openFragment(new GeometryFragment());
+                break;
+            case R.id.nav_renderer:
+                openFragment(renderingFragment);
+                break;
+            case R.id.nav_about_app:
+                itemSelected = 0;
+                aboutAppDialog();
+                break;
         }
     }
 
@@ -157,6 +182,38 @@ public class MainActivity extends AppCompatActivity
         return getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
     }
 
+    private void aboutAppDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_about_app, null);
+        View appIcon = view.findViewById(R.id.appIcon);
+        appIcon.setOnClickListener(this);
+        builder.setView(view);
+
+        TextView version = view.findViewById(R.id.appVersionTextView);
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            version.setText(info.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        builder.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.appIcon) {
+            if(!PreferenceManager.isUserAdmin()) {
+                clickHandler.removeCallbacksAndMessages(null);
+                clickHandler.postDelayed(() -> clickCounter = 0, MAX_CLICK_DELAY);
+                if(++clickCounter == 10) {
+                    PreferenceManager.setUserAdmin(true);
+                    recreate();
+                    Toast.makeText(this, R.string.now_you_are_admin, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {

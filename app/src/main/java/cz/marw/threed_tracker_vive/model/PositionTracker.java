@@ -14,7 +14,11 @@ public class PositionTracker implements Parcelable {
 
     private boolean connected;
 
-    private boolean receivingCoordinates;
+    private State state = State.UNKNOWN;
+
+    public enum State {
+        UNKNOWN, GEOMETRY_NOT_SET, GEOMETRY_IS_SET, RECEIVING_COORDINATES
+    }
 
     /**
      * There is stored drawable gradient.
@@ -29,7 +33,7 @@ public class PositionTracker implements Parcelable {
     private PositionTracker(Parcel in) {
         device = BluetoothDevice.CREATOR.createFromParcel(in);
         connected = in.readByte() == 1;
-        receivingCoordinates = in.readByte() == 1;
+        state = State.values()[in.readInt()];
         color = in.readInt();
     }
 
@@ -54,7 +58,7 @@ public class PositionTracker implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         device.writeToParcel(dest, flags);
         dest.writeByte((byte) (connected ? 1 : 0));
-        dest.writeByte((byte) (receivingCoordinates ? 1 : 0));
+        dest.writeInt(state.ordinal());
         dest.writeInt(color);
 
     }
@@ -74,16 +78,16 @@ public class PositionTracker implements Parcelable {
     public void setConnected(boolean connected) {
         this.connected = connected;
         if(!connected) {
-            setReceivingCoordinates(false);
+            setState(State.UNKNOWN);
         }
     }
 
-    public boolean isReceivingCoordinates() {
-        return receivingCoordinates;
+    public State getState() {
+        return state;
     }
 
-    public void setReceivingCoordinates(boolean receivingCoordinates) {
-        this.receivingCoordinates = receivingCoordinates;
+    public void setState(State state) {
+        this.state = state;
     }
 
     @DrawableRes

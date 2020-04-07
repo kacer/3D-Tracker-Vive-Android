@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/content_padding"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:textAppearance="@style/AppTheme.TextAppearance.Title1"
+            android:text="@string/actual_geometry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/baseStationsActualGeometryRV"
+            android:nestedScrollingEnabled="false"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android" />
+
+        <TextView
+            android:textAppearance="@style/AppTheme.TextAppearance.Title1"
+            android:layout_marginTop="24dp"
+            android:text="@string/stored_geometry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/baseStationsStoredGeometryRV"
+            android:nestedScrollingEnabled="false"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+    <TextView
+        android:id="@+id/station1NumberTextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/content_padding"
+        android:layout_marginTop="@dimen/content_padding"
+        android:layout_marginEnd="@dimen/content_padding"
+        android:text="@string/base_station_number_formatted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/origin1TextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/content_padding"
+        android:text="@string/origin_formatted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/station1NumberTextView"
+        app:layout_constraintTop_toBottomOf="@+id/station1NumberTextView" />
+
+    <TextView
+        android:id="@+id/rotation1TextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/rotation"
+        app:layout_constraintStart_toStartOf="@+id/origin1TextView"
+        app:layout_constraintTop_toBottomOf="@+id/origin1TextView" />
+
+    <TextView
+        android:id="@+id/row11TextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/content_padding"
+        android:text="@string/matrix_row_formatted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/rotation1TextView"
+        app:layout_constraintTop_toBottomOf="@+id/origin1TextView" />
+
+    <TextView
+        android:id="@+id/row12TextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/content_padding"
+        android:text="@string/matrix_row_formatted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/row11TextView"
+        app:layout_constraintTop_toBottomOf="@+id/row11TextView" />
+
+    <TextView
+        android:id="@+id/row13TextView"
+        android:textAppearance="@style/AppTheme.TextAppearance.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/content_padding"
+        android:text="@string/matrix_row_formatted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/row12TextView"
+        app:layout_constraintTop_toBottomOf="@+id/row12TextView" />
+</androidx.constraintlayout.widget.ConstraintLayout>
