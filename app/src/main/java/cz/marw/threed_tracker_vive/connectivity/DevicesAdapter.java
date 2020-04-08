@@ -51,7 +51,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView state;
 
         @BindView(R.id.connectButton)
-        MaterialButton connect;
+        MaterialButton connectButton;
 
         @BindView(R.id.sendGeometryButton)
         MaterialButton sendGeometry;
@@ -62,13 +62,14 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            connect.setOnClickListener(this);
+            connectButton.setOnClickListener(this);
             sendGeometry.setOnClickListener(this);
         }
 
         public void bind(PositionTracker tracker) {
             connected.setText((tracker.isConnected()) ? R.string.connected : R.string.disconnected);
-            connect.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
+            connectButton.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
+           // connectButton.setEnabled(true);
             name.setText(context.getString(R.string.device_name_formatted, tracker.getDevice().getName()));
             mac.setText(context.getString(R.string.device_mac_addr_formatted, tracker.getDevice().getAddress()));
 
@@ -88,7 +89,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
             }
             state.setText(context.getString(R.string.device_state, stateStr.toLowerCase()));
-            background.setBackgroundResource(tracker.getColor());
+            background.setBackgroundResource(tracker.getColorDrawable());
+            //sendGeometry.setEnabled(true);
             if(tracker.isConnected())
                 sendGeometry.setVisibility((PreferenceManager.isUserAdmin()) ? View.VISIBLE : View.INVISIBLE);
             else
@@ -102,16 +104,21 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 case R.id.connectButton:
                     if(tracker.isConnected()) {
                         // disconnect
-                        connect.setText(R.string.disconnecting);
+                        connectButton.setText(R.string.disconnecting);
+                        //connectButton.setEnabled(false);
                         scanner.disconnectFromDevice(tracker.getDevice());
                     } else {
                         // connect
-                        connect.setText(R.string.connecting);
-                        scanner.connectToDevice(tracker.getDevice(), context);
+                        //connectButton.setEnabled(false);
+                        boolean result = scanner.connectToDevice(tracker.getDevice(), context);
+                        if(result) {
+                            connectButton.setText(R.string.connecting);
+                        }
                     }
                     break;
                 case R.id.sendGeometryButton:
                     scanner.sendGeometryToTracker(tracker.getDevice());
+                    //sendGeometry.setEnabled(false);
                     break;
             }
         }

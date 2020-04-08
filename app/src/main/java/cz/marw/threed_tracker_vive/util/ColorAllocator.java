@@ -39,12 +39,12 @@ public class ColorAllocator {
         }
 
         // allocate the color to the tracker
-        tracker.setColor(key);
+        tracker.setColorDrawable(key);
         colorAllocation.put(key, tracker);
     }
 
     public void free(PositionTracker tracker) {
-        colorAllocation.remove(tracker.getColor(), tracker);
+        colorAllocation.remove(tracker.getColorDrawable(), tracker);
     }
 
 }

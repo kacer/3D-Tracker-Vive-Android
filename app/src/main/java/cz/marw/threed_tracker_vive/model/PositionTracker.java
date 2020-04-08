@@ -4,8 +4,11 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import cz.marw.threed_tracker_vive.R;
+import cz.marw.threed_tracker_vive.rendering.transforms.Vec3D;
 
 
 public class PositionTracker implements Parcelable {
@@ -23,7 +26,11 @@ public class PositionTracker implements Parcelable {
     /**
      * There is stored drawable gradient.
      */
-    private @DrawableRes int color;
+    private @DrawableRes int colorDrawable;
+
+    private @ColorRes int color;
+
+    private Vec3D coordinates;
 
 
     public PositionTracker(BluetoothDevice device) {
@@ -34,7 +41,7 @@ public class PositionTracker implements Parcelable {
         device = BluetoothDevice.CREATOR.createFromParcel(in);
         connected = in.readByte() == 1;
         state = State.values()[in.readInt()];
-        color = in.readInt();
+        colorDrawable = in.readInt();
     }
 
     public static final Parcelable.Creator<PositionTracker> CREATOR = new Creator<PositionTracker>() {
@@ -59,7 +66,7 @@ public class PositionTracker implements Parcelable {
         device.writeToParcel(dest, flags);
         dest.writeByte((byte) (connected ? 1 : 0));
         dest.writeInt(state.ordinal());
-        dest.writeInt(color);
+        dest.writeInt(colorDrawable);
 
     }
 
@@ -91,12 +98,47 @@ public class PositionTracker implements Parcelable {
     }
 
     @DrawableRes
+    public int getColorDrawable() {
+        return colorDrawable;
+    }
+
+    public void setColorDrawable(@DrawableRes int colorDrawable) {
+        this.colorDrawable = colorDrawable;
+        switch(colorDrawable) {
+            case R.drawable.item_3d_tracker_blue:
+                color = R.color.colorTackerBlueMiddle;
+                break;
+            case R.drawable.item_3d_tracker_cherry:
+                color = R.color.colorTrackerCherryMiddle;
+                break;
+            case R.drawable.item_3d_tracker_green:
+                color = R.color.colorTrackerGreenMiddle;
+                break;
+            case R.drawable.item_3d_tracker_orange:
+                color = R.color.colorTrackerOrangeMiddle;
+                break;
+            case R.drawable.item_3d_tracker_pink:
+                color = R.color.colorTrackerPinkMiddle;
+                break;
+            case R.drawable.item_3d_tracker_purple:
+                color = R.color.colorTrackerPurpleMiddle;
+                break;
+            case R.drawable.item_3d_tracker_red:
+                color = R.color.colorTrackerRedMiddle;
+                break;
+        }
+    }
+
     public int getColor() {
         return color;
     }
 
-    public void setColor(@DrawableRes int color) {
-        this.color = color;
+    public Vec3D getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(Vec3D coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override

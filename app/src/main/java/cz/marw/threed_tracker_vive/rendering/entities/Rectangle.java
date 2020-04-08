@@ -17,15 +17,15 @@ public class Rectangle extends Entity {
     }
 
     @Override
-    public void draw(Mat4 model, Mat4 view, Mat4 projection) {
+    public void draw(Mat4 view, Mat4 projection) {
         GLES31.glUseProgram(shaderProgram);
-        GLES31.glUniformMatrix4fv(matLoc, 1, false, new Mat4Identity().floatArray(), 0);
+        GLES31.glUniformMatrix4fv(matLoc, 1, false, getModelMat().floatArray(), 0);
         glBuffers.draw(GLES31.GL_TRIANGLES, shaderProgram);
         GLES31.glUseProgram(0);
     }
 
     @Override
-    protected GLBuffers createGeometry() {
+    protected GLBuffers createGeometry(Context context) {
         float[] vertices = new float[] {
                 -0.5f,  0.5f, 0.0f,
                 -0.5f, -0.5f, 0.0f,

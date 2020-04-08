@@ -28,7 +28,7 @@ public class RenderingFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+        getActivity().setTitle(R.string.position_rendering);
     }
 
     @Override

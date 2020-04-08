@@ -247,6 +247,8 @@ public class DiscoveryFragment extends Fragment implements SwipeRefreshLayout.On
     public void onDestroy() {
         super.onDestroy();
         devicesAdapter.close();
+        scanning = false;
+        DevicesScanner.getInstance().stopScanning();
         DevicesScanner.getInstance().unregisterBroadcastReceiver(deviceScannerReceiver);
     }
 

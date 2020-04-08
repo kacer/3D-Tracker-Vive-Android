@@ -34,6 +34,7 @@ import cz.marw.threed_tracker_vive.connectivity.characteristicoperation.WriteOpe
 import cz.marw.threed_tracker_vive.geometry.Geometry;
 import cz.marw.threed_tracker_vive.model.BaseStation;
 import cz.marw.threed_tracker_vive.model.PositionTracker;
+import cz.marw.threed_tracker_vive.rendering.transforms.Vec3D;
 import cz.marw.threed_tracker_vive.util.ByteUtils;
 import cz.marw.threed_tracker_vive.util.ColorAllocator;
 import cz.marw.threed_tracker_vive.util.PreferenceManager;
@@ -54,7 +55,6 @@ public class DevicesScanner {
 
     public static final String KEY_DEVICE_POSITION_TRACKER = "key_device";
     public static final String KEY_SCANNING_STATE_BOOLEAN = "key_scanning_state";
-    public static final String KEY_COORDINATES = "key_coordinates";
     public static final String KEY_DEBUG_BLE_CONN_STATUS = "key_debug_ble_conn_status";
     public static final String KEY_DEBUG_BLE_CONN_NEW_STATE = "key_debug_ble_conn_new_state";
 
@@ -150,33 +150,30 @@ public class DevicesScanner {
             }
 
             PositionTracker tracker = getPositionTracker(gatt.getDevice());
-            if(tracker == null) {
-                return;
-            }
 
             if(newState == BluetoothProfile.STATE_CONNECTED) {
-                tracker.setConnected(true);
+                gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
                 activeConnections.add(gatt);
                 gatt.discoverServices();
             } else if(newState == BluetoothProfile.STATE_DISCONNECTED) {
-                tracker.setConnected(false);
+                gatt.close();
                 activeConnections.remove(gatt);
             }
 
-            // broadcast connection state change
-            Intent intent = new Intent(ACTION_CONNECTION_STATE);
-            intent.putExtra(KEY_DEVICE_POSITION_TRACKER, tracker);
-            broadcastManager.sendBroadcast(intent);
+            if(tracker != null) {
+                tracker.setConnected(newState == BluetoothProfile.STATE_CONNECTED);
+
+                // broadcast connection state change
+                Intent intent = new Intent(ACTION_CONNECTION_STATE);
+                intent.putExtra(KEY_DEVICE_POSITION_TRACKER, tracker);
+                broadcastManager.sendBroadcast(intent);
+            }
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if(status != BluetoothGatt.GATT_SUCCESS)
                 return;
-
-            /*BluetoothGattCharacteristic characteristic = gatt.getService(TrackerServices.SERVICE_COORDINATES_UUID.getUuid())
-                    .getCharacteristic(TrackerServices.CHARACTERISTIC_COORDINATES_UUID.getUuid());
-            subscribeNotifications(characteristic, gatt);*/
 
             System.out.println("********ON SERVICE DISCOVERED******");
             if(gatt.getServices().isEmpty()) {
@@ -190,15 +187,30 @@ public class DevicesScanner {
             }
             //TODO: null
             readGeometryFromTracker(gatt);
-            fetchNextOperation(gatt);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            //TODO: broadcast received coordinates
             float x = ByteBuffer.wrap(characteristic.getValue(), 0, 4).order(ByteOrder.LITTLE_ENDIAN).getFloat();
             float y = ByteBuffer.wrap(characteristic.getValue(), 4, 4).order(ByteOrder.LITTLE_ENDIAN).getFloat();
             float z = ByteBuffer.wrap(characteristic.getValue(), 8, 4).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+
+            PositionTracker tracker = getPositionTracker(gatt.getDevice());
+            if(tracker == null) {
+                return;
+            }
+
+            if(!tracker.getState().equals(PositionTracker.State.RECEIVING_COORDINATES)) {
+                tracker.setState(PositionTracker.State.RECEIVING_COORDINATES);
+                Intent intent = new Intent(ACTION_DEVICE_STATE_CHANGED);
+                intent.putExtra(KEY_DEVICE_POSITION_TRACKER, tracker);
+                broadcastManager.sendBroadcast(intent);
+            }
+
+            tracker.setCoordinates(new Vec3D(x, y, z));
+            Intent intent = new Intent(ACTION_COORDINATES_RECEIVED);
+            intent.putExtra(KEY_DEVICE_POSITION_TRACKER, tracker);
+            broadcastManager.sendBroadcast(intent);
         }
 
         @Override
@@ -222,22 +234,18 @@ public class DevicesScanner {
             System.out.println("Characteristic write: " + characteristic.getUuid() + " status: " + status);
             if(status == BluetoothGatt.GATT_SUCCESS) {
                 switch(characteristic.getUuid().toString()) {
-                    case TrackerServices.STR_UUID_CHAR_STATION_INDEX:
-                        // dont need to react on that
-                        break;
-                    case TrackerServices.STR_UUID_CHAR_STATION_ORIGIN:
-                        break;
-                    case TrackerServices.STR_UUID_CHAR_STATION_ROT_ROW_1:
-                        break;
-                    case TrackerServices.STR_UUID_CHAR_STATION_ROT_ROW_2:
-                        break;
-
                     case TrackerServices.STR_UUID_CHAR_STATION_ROT_ROW_3:
                         if(++stationGeometryIndexW == 2) {
                             // the geometry was successfully set to tracker
                             PositionTracker tracker = getPositionTracker(gatt.getDevice());
                             if(tracker == null)
                                 return;
+
+                            // is need to subscribe characteristic for receiving coordinates
+                            subscribeNotifications(
+                                    TrackerServices.getCharacteristic(gatt, TrackerServices.CHARACTERISTIC_COORDINATES_UUID),
+                                    gatt
+                            );
 
                             tracker.setState(PositionTracker.State.GEOMETRY_IS_SET);
                             Intent intent = new Intent(ACTION_DEVICE_STATE_CHANGED);
@@ -294,6 +302,17 @@ public class DevicesScanner {
                             for(BaseStation bs : stationsGeometryFromTracker)
                                 System.out.println(bs);
                             if(Geometry.isValid(stationsGeometryFromTracker)) {
+                                // Android 9 and 10 returns characteristic value wrongly sometimes
+                                // (origins of the base stations are equal), but in the 3D tracker are
+                                // set correctly, so in this case try to read geometry again
+                                if(stationsGeometryFromTracker.get(0).getOrigin()
+                                        .equals(stationsGeometryFromTracker.get(1).getOrigin())) {
+                                    readGeometryFromTracker(gatt);
+
+                                    return;
+                                }
+
+                                // Everything is valid, set new geometry
                                 Geometry.setGeometry(stationsGeometryFromTracker);
                                 tracker.setState(PositionTracker.State.GEOMETRY_IS_SET);
                                 subscribeNotifications(
@@ -350,6 +369,7 @@ public class DevicesScanner {
                     TrackerServices.getCharacteristic(gatt, TrackerServices.CHARACTERISTIC_BASE_STATION_ROT_ROW_3_UUID)
             ));
         }
+        fetchNextOperation(gatt);
     }
 
     private void writeGeometryToTracker(BluetoothGatt gatt, List<BaseStation> geometry) {
@@ -440,9 +460,15 @@ public class DevicesScanner {
     }
 
     public boolean connectToDevice(BluetoothDevice device, Context context) {
+        if(device == null)
+            return false;
+
         BluetoothGatt gatt = device.connectGatt(context, false, gattCallback);
 
-        return gatt.connect();
+        if(gatt != null)
+            return gatt.connect();
+
+        return false;
     }
 
     public void disconnectFromDevice(BluetoothDevice device) {

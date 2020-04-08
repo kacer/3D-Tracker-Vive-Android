@@ -3,4 +3,12 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorTackerBlueMiddle">#009cc6</color>
+    <color name="colorTrackerCherryMiddle">#ef4746</color>
+    <color name="colorTrackerGreenMiddle">#94b205</color>
+    <color name="colorTrackerOrangeMiddle">#f97f26</color>
+    <color name="colorTrackerPinkMiddle">#d9389c</color>
+    <color name="colorTrackerPurpleMiddle">#b92af7</color>
+    <color name="colorTrackerRedMiddle">#cd2020</color>
 </resources>
