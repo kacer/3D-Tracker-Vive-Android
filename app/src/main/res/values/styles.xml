@@ -40,7 +40,7 @@
     </style>
 
     <style name="AppTheme.TextAppearance.Title1" parent="AppTheme.TextAppearance.Item3DTracker.Base">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="AppTheme.Widget.Item3DTracker.Button" parent="Widget.AppCompat.Button">

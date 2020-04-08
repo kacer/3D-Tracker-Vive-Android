@@ -43,4 +43,12 @@
     <string name="actual_geometry">Actual geometry</string>
     <string name="stored_geometry">Stored geometry</string>
     <string name="swap_geometry">Swap geometry</string>
+    <string name="connected_colon_formatted">Connected: %1$s</string>
+    <plurals name="number_of_trackers">
+        <item quantity="zero">no tracker</item>
+        <item quantity="one">%d tracker</item>
+        <item quantity="few">%d trackers</item>
+        <item quantity="many">%d trackers</item>
+        <item quantity="other">no tracker</item>
+    </plurals>
 </resources>

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,6 +80,12 @@ public class DiscoveryFragment extends Fragment implements SwipeRefreshLayout.On
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.threed_trackers);
         refreshLayout.setOnRefreshListener(this);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent, getActivity().getTheme()));
+        } else {
+            refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+        }
+
         devicesAdapter = new DevicesAdapter(getContext());
         devicesRecyclerView.setHasFixedSize(true);
         devicesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

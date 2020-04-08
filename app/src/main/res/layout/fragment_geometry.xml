@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    android:layout_width="match_parent"
+<ScrollView android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/content_padding"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:padding="@dimen/content_padding_half"
         android:orientation="vertical">
 
-        <TextView
-            android:textAppearance="@style/AppTheme.TextAppearance.Title1"
-            android:text="@string/actual_geometry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/baseStationsActualGeometryRV"
-            android:nestedScrollingEnabled="false"
-            android:layout_height="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_margin="@dimen/content_padding_half"
+            app:cardCornerRadius="@dimen/card_corner_radius"
             android:layout_width="match_parent"
-            xmlns:android="http://schemas.android.com/apk/res/android" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:textAppearance="@style/AppTheme.TextAppearance.Title1"
-            android:layout_marginTop="24dp"
-            android:text="@string/stored_geometry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="@dimen/content_padding_half"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/baseStationsStoredGeometryRV"
-            android:nestedScrollingEnabled="false"
-            android:layout_height="wrap_content"
+                <TextView
+                    android:textAppearance="@style/AppTheme.TextAppearance.Title1"
+                    android:text="@string/actual_geometry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/baseStationsActualGeometryRV"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    xmlns:android="http://schemas.android.com/apk/res/android" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_margin="@dimen/content_padding_half"
+            app:cardCornerRadius="@dimen/card_corner_radius"
             android:layout_width="match_parent"
-            xmlns:android="http://schemas.android.com/apk/res/android" />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="@dimen/content_padding_half"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textAppearance="@style/AppTheme.TextAppearance.Title1"
+                    android:text="@string/stored_geometry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/baseStationsStoredGeometryRV"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    xmlns:android="http://schemas.android.com/apk/res/android" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

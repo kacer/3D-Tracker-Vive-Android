@@ -106,7 +106,7 @@ public class PositionTracker implements Parcelable {
         this.colorDrawable = colorDrawable;
         switch(colorDrawable) {
             case R.drawable.item_3d_tracker_blue:
-                color = R.color.colorTackerBlueMiddle;
+                color = R.color.colorTrackerBlueMiddle;
                 break;
             case R.drawable.item_3d_tracker_cherry:
                 color = R.color.colorTrackerCherryMiddle;

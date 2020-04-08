@@ -1,5 +1,8 @@
 package cz.marw.threed_tracker_vive;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ import butterknife.ButterKnife;
 import cz.marw.threed_tracker_vive.connectivity.DevicesScanner;
 import cz.marw.threed_tracker_vive.connectivity.DiscoveryFragment;
 import cz.marw.threed_tracker_vive.geometry.GeometryFragment;
+import cz.marw.threed_tracker_vive.model.PositionTracker;
 import cz.marw.threed_tracker_vive.rendering.RenderingFragment;
 import cz.marw.threed_tracker_vive.util.PreferenceManager;
 
@@ -29,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener,
@@ -42,9 +48,13 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
+    TextView connectedTrackers;
+
     private int itemSelected;
     private Fragment discoveryFragment;
     private Fragment renderingFragment;
+
+    private DevicesBroadcastReceiver broadcastReceiver = new DevicesBroadcastReceiver();
 
     private int clickCounter;
     private Handler clickHandler = new Handler();
@@ -77,6 +87,8 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_trackers);
+        connectedTrackers = navigationView.getHeaderView(0).findViewById(R.id.connectedTrackersTextView);
+        connectedTrackers.setText(getConnectedTrackersString(0));
         if(PreferenceManager.isUserAdmin())
             navigationView.getMenu().findItem(R.id.nav_geometry).setVisible(true);
 
@@ -89,6 +101,8 @@ public class MainActivity extends AppCompatActivity
         }*/
         discoveryFragment = new DiscoveryFragment();
         renderingFragment = new RenderingFragment();
+
+        DevicesScanner.getInstance().registerBroadcastReceiver(broadcastReceiver, DevicesScanner.ACTION_CONNECTION_STATE);
 
         openFragment(discoveryFragment);
     }
@@ -211,6 +225,30 @@ public class MainActivity extends AppCompatActivity
                     recreate();
                     Toast.makeText(this, R.string.now_you_are_admin, Toast.LENGTH_LONG).show();
                 }
+            }
+        }
+    }
+
+    private String getConnectedTrackersString(int count) {
+        return getString(R.string.connected_colon_formatted,
+                getResources().getQuantityString(R.plurals.number_of_trackers, count, count));
+    }
+
+    private class DevicesBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(DevicesScanner.ACTION_CONNECTION_STATE.equals(action)) {
+                // recalculate a connected trackers
+                List<PositionTracker> devices = DevicesScanner.getInstance().getDevices();
+                int count = 0;
+                for(PositionTracker tracker : devices) {
+                    if(tracker.isConnected()) {
+                        count++;
+                    }
+                }
+                connectedTrackers.setText(getConnectedTrackersString(count));
             }
         }
     }
