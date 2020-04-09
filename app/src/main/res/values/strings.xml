@@ -51,4 +51,6 @@
         <item quantity="many">%d trackers</item>
         <item quantity="other">no tracker</item>
     </plurals>
+    <string name="change_background">Change background</string>
+    <string name="device_does_not_support_opengl">This device does not support OpenGL 3.0 and therefore positions cannot be rendered.</string>
 </resources>

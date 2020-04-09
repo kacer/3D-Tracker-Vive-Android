@@ -31,6 +31,7 @@ import cz.marw.threed_tracker_vive.rendering.transforms.Mat4Scale;
 import cz.marw.threed_tracker_vive.rendering.transforms.Mat4Transl;
 import cz.marw.threed_tracker_vive.rendering.transforms.Point3D;
 import cz.marw.threed_tracker_vive.rendering.transforms.Vec3D;
+import cz.marw.threed_tracker_vive.util.PreferenceManager;
 
 
 public class GLRenderer implements GLSurfaceView.Renderer {
@@ -38,8 +39,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private static final double MAX_CAMERA_ZOOM = 20;
     private static final double MIN_CAMERA_ZOOM = 0.5;
 
+    private static final float DARK_COLOR = 0.25f;
+    private static final float BRIGHT_COLOR = 1.0f;
+
     private Context context;
     private int width, height;
+    private float clearColor;
     private BaseStation baseStationTest;
     private Entity baseStation0;
     private Entity baseStation1;
@@ -61,11 +66,14 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         DevicesScanner.getInstance()
                 .registerBroadcastReceiver(broadcastReceiver, DevicesScanner.ACTION_COORDINATES_RECEIVED,
                         DevicesScanner.ACTION_CONNECTION_STATE, DevicesScanner.ACTION_DEVICE_STATE_CHANGED);
+        clearColor = getBackgroundColorByPreference();
         cam = new CameraYUp(new Vec3D(0, 0, 0), 0 - Math.PI, 0 - Math.PI / 4, 8, false);
         lightPosition = new Point3D(0, 5, 15);
         baseStationTest = new BaseStation(context);
         axis = new Axis(context);
         tracker = new Cube(context, new Col(), lightPosition);
+        baseStation0 = new Cube(context, new Col(0.5, 0.35, 0.8), lightPosition);
+        baseStation1 = new Cube(context, new Col(0, 0, 0), lightPosition);
 
         if(Geometry.isGeometrySet()) {
             Mat4 stationsScale = new Mat4Scale(0.06, 0.083, 0.083);
@@ -75,7 +83,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
                     Geometry.getGeometry().get(0).getRotationMatrix().getRow(1).getAsVec3D(),
                     Geometry.getGeometry().get(0).getRotationMatrix().getRow(2).getAsVec3D()
             ));
-            baseStation0 = new Cube(context, new Col(0.5, 0.35, 0.8), lightPosition);
             baseStation0.pushModelMatrix(new Mat4Transl(Geometry.getGeometry().get(0).getOrigin().getAsVec3D()));
             //baseStation0.pushModelMatrix(new Mat4Transl(0, 0, 0.15));
             baseStation0.pushModelMatrix(rotation);
@@ -86,7 +93,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
                     Geometry.getGeometry().get(1).getRotationMatrix().getRow(1).getAsVec3D(),
                     Geometry.getGeometry().get(1).getRotationMatrix().getRow(2).getAsVec3D()
             ));
-            baseStation1 = new Cube(context, new Col(0, 0, 0), lightPosition);
             baseStation1.pushModelMatrix(new Mat4Transl(Geometry.getGeometry().get(1).getOrigin().getAsVec3D()));
             baseStation1.pushModelMatrix(rotation);
             baseStation1.pushModelMatrix(stationsScale);
@@ -95,17 +101,18 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        //GLES31.glBindFrameBuffer(GLES31.GL_FRAMEBUFFER, 0);
-        //GLES31.glViewport(0, 0, width, height);
-        GLES31.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+        GLES31.glClearColor(clearColor, clearColor, clearColor, 1.0f);
         GLES31.glClear(GLES31.GL_COLOR_BUFFER_BIT | GLES31.GL_DEPTH_BUFFER_BIT);
 
         GLES31.glEnable(GLES31.GL_DEPTH_TEST);
 
-        baseStationTest.draw(cam.getViewMatrix(), proj);
+        //baseStationTest.draw(cam.getViewMatrix(), proj);
         axis.draw(cam.getViewMatrix(), proj);
-        baseStation0.draw(cam.getViewMatrix(), proj);
-        baseStation1.draw(cam.getViewMatrix(), proj);
+
+        if(Geometry.isGeometrySet()) {
+            baseStation0.draw(cam.getViewMatrix(), proj);
+            baseStation1.draw(cam.getViewMatrix(), proj);
+        }
 
         for(Tracker3D t : trackers) {
             if(t.isReadyToDraw()) {
@@ -132,6 +139,18 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         axis.cleanUp();
         DevicesScanner.getInstance()
                 .unregisterBroadcastReceiver(broadcastReceiver);
+    }
+
+    public void changeBackground() {
+        clearColor = getBackgroundColorByPreference();
+    }
+
+    private float getBackgroundColorByPreference() {
+        if(PreferenceManager.isDarkBackground3DScene()) {
+            return DARK_COLOR;
+        }
+
+        return BRIGHT_COLOR;
     }
 
     public void computeAngles(double dx, double dy) {

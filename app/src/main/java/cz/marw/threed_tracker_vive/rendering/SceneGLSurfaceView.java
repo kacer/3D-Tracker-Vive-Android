@@ -36,6 +36,10 @@ public class SceneGLSurfaceView extends GLSurfaceView {
         scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
+    public void changeBackground() {
+        renderer.changeBackground();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         scaleDetector.onTouchEvent(e);

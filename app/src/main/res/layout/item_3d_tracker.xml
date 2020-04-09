@@ -82,7 +82,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sendGeometryButton"
             style="@style/AppTheme.Widget.Item3DTracker.Button"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="wrap_content"
             android:visibility="invisible"
             app:cornerRadius="@dimen/button_corner_radius"

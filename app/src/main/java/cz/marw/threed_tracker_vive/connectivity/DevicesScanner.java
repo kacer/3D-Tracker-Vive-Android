@@ -449,6 +449,10 @@ public class DevicesScanner {
     }
 
     public void stopScanning() {
+        if(getLeScanner() == null) {
+            return;
+        }
+
         handler.removeCallbacksAndMessages(null);
         scanning = false;
         getLeScanner().stopScan(scanCallback);

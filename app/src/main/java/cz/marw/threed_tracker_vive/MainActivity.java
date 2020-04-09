@@ -1,8 +1,10 @@
 package cz.marw.threed_tracker_vive;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -105,6 +107,14 @@ public class MainActivity extends AppCompatActivity
         DevicesScanner.getInstance().registerBroadcastReceiver(broadcastReceiver, DevicesScanner.ACTION_CONNECTION_STATE);
 
         openFragment(discoveryFragment);
+
+        // check supported version of OpenGL
+        if(isOpenGLVersionSupported()) {
+            navigationView.getMenu().findItem(R.id.nav_renderer).setEnabled(true);
+        } else {
+            navigationView.getMenu().findItem(R.id.nav_renderer).setEnabled(false);
+            Toast.makeText(this, R.string.device_does_not_support_opengl, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -179,6 +189,13 @@ public class MainActivity extends AppCompatActivity
                 aboutAppDialog();
                 break;
         }
+    }
+
+    private boolean isOpenGLVersionSupported() {
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ConfigurationInfo info = am.getDeviceConfigurationInfo();
+
+        return info.reqGlEsVersion >= 0x30000;
     }
 
     private void openFragment(Fragment fragment) {
