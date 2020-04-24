@@ -9,9 +9,12 @@ import android.view.ScaleGestureDetector;
 
 public class SceneGLSurfaceView extends GLSurfaceView {
 
+    private static final int INVALID_POINTER_ID = -1;
     private static final double ANGLE_MULTIPLIER = 1.35;
     private double previousX;
     private double previousY;
+    private boolean scaleStarted;
+    private int activePointerId = INVALID_POINTER_ID;
 
     private GLRenderer renderer;
     private Context context;
@@ -44,24 +47,56 @@ public class SceneGLSurfaceView extends GLSurfaceView {
     public boolean onTouchEvent(MotionEvent e) {
         scaleDetector.onTouchEvent(e);
 
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                previousX = e.getX();
-                previousY = e.getY();
-                break;
+        final int action = e.getActionMasked();
 
-            case MotionEvent.ACTION_MOVE:
-                double newX = e.getX();
-                double newY = e.getY();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                final int pointerIndex = e.getActionIndex();
+                final float x = e.getX(pointerIndex);
+                final float y = e.getY(pointerIndex);
+
+                previousX = x;
+                previousY = y;
+
+                activePointerId = e.getPointerId(pointerIndex);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                final int pointerIndex = e.findPointerIndex(activePointerId);
+
+                double newX = e.getX(pointerIndex);
+                double newY = e.getY(pointerIndex);
 
                 double dx = newX - previousX;
                 double dy = newY - previousY;
 
-                renderer.computeAngles(dx * ANGLE_MULTIPLIER, dy * ANGLE_MULTIPLIER);
+                if(!scaleStarted)
+                    renderer.computeAngles(dx, dy);
 
                 previousX = newX;
                 previousY = newY;
                 break;
+            }
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                activePointerId = INVALID_POINTER_ID;
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP: {
+                final int pointerIndex = e.getActionIndex();
+                final int pointerId = e.getPointerId(pointerIndex);
+
+                if(pointerId == activePointerId) {
+                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    previousX = e.getX(newPointerIndex);
+                    previousY = e.getY(newPointerIndex);
+                    activePointerId = e.getPointerId(newPointerIndex);
+                }
+                break;
+            }
         }
 
         return true;
@@ -74,6 +109,18 @@ public class SceneGLSurfaceView extends GLSurfaceView {
             renderer.zoom(detector.getScaleFactor());
 
             return true;
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            scaleStarted = true;
+
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            scaleStarted = false;
         }
     }
 

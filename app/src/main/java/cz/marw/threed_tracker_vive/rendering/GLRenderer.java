@@ -38,6 +38,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     private static final double MAX_CAMERA_ZOOM = 20;
     private static final double MIN_CAMERA_ZOOM = 0.5;
+    private static final double MAX_ANGLE_MULTIPLIER = 1.5;
+    private static final double MIN_ANGLE_MULTIPLIER = 1;
 
     private static final float DARK_COLOR = 0.25f;
     private static final float BRIGHT_COLOR = 1.0f;
@@ -154,6 +156,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void computeAngles(double dx, double dy) {
+        double multiplier = (cam.getRadius() - MIN_CAMERA_ZOOM) *
+                (MAX_ANGLE_MULTIPLIER - MIN_ANGLE_MULTIPLIER) /
+                (MAX_CAMERA_ZOOM - MIN_CAMERA_ZOOM) + MIN_ANGLE_MULTIPLIER;
+
+        dx *= multiplier;
+        dy *= multiplier;
+
         double zenith = cam.getZenith() + Math.PI * (dy / height);
         double azimuth = cam.getAzimuth() + Math.PI * (dx / width);
 
