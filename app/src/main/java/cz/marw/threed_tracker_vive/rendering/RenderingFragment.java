@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,8 @@ public class RenderingFragment extends Fragment {
 
     @BindView(R.id.sceneGLSurfaceView)
     SceneGLSurfaceView glSurfaceView;
+
+    private AlertDialog dialogInfo;
 
     @Nullable
     @Override
@@ -35,6 +38,10 @@ public class RenderingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         getActivity().setTitle(R.string.position_rendering);
         setHasOptionsMenu(true);
+        dialogInfo = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.info)
+                .setView(R.layout.dialog_rendering_info)
+                .create();
     }
 
     @Override
@@ -49,6 +56,9 @@ public class RenderingFragment extends Fragment {
                 boolean dark = PreferenceManager.isDarkBackground3DScene();
                 PreferenceManager.setDarkBackground3DScene(!dark);
                 glSurfaceView.changeBackground();
+                return true;
+            case R.id.itemShowInfoDialog:
+                dialogInfo.show();
                 return true;
         }
 

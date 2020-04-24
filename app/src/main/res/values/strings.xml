@@ -53,4 +53,9 @@
     </plurals>
     <string name="change_background">Change background</string>
     <string name="device_does_not_support_opengl">This device does not support OpenGL 3.0 and therefore positions cannot be rendered.</string>
+    <string name="info">Info</string>
+    <string name="master_base_station">Base Station master - c</string>
+    <string name="slave_base_station">Base Station slave - b</string>
+    <string name="length_of_axis_is_one_meter">The length of the axis is 1 meter.</string>
+    <string name="another_devices_are_threed_trackers">Other devices are 3D trackers.</string>
 </resources>

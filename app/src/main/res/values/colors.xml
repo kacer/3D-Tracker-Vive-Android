@@ -11,4 +11,7 @@
     <color name="colorTrackerPinkMiddle">#d9389c</color>
     <color name="colorTrackerPurpleMiddle">#b92af7</color>
     <color name="colorTrackerRedMiddle">#cd2020</color>
+
+    <color name="colorBaseStationMaster">#7f59cc</color>
+    <color name="colorBaseStationSlave">#000000</color>
 </resources>
