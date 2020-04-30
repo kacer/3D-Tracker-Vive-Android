@@ -57,4 +57,8 @@
     <string name="another_devices_are_threed_trackers">Other devices are 3D trackers.</string>
     <string name="geometry_was_successfully_set">The geometry was successfully set.</string>
     <string name="geometry_was_not_successfully_set">The geometry was not successfully set.</string>
+    <string name="reading_geometry">Reading geometry</string>
+    <string name="sending_geometry">Sending geometry</string>
+    <string name="enabling_notify">Enabling notify</string>
+    <string name="not_receiving_coordinates">Not receiving coordinates</string>
 </resources>

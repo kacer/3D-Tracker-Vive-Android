@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.material.button.MaterialButton;
@@ -35,6 +36,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private DevicesScannerBroadcastReceiver devicesScannerReceiver;
     private Context context;
     private boolean scanning;
+    private boolean pendingSendGeometry;
 
     public class DeviceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -54,7 +56,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         MaterialButton connectButton;
 
         @BindView(R.id.sendGeometryButton)
-        MaterialButton sendGeometry;
+        MaterialButton sendGeometryButton;
 
         @BindView(R.id.itemBackground)
         View background;
@@ -63,38 +65,76 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             ButterKnife.bind(this, itemView);
             connectButton.setOnClickListener(this);
-            sendGeometry.setOnClickListener(this);
+            sendGeometryButton.setOnClickListener(this);
         }
 
         public void bind(PositionTracker tracker) {
-            connected.setText((tracker.isConnected()) ? R.string.connected : R.string.disconnected);
-            connectButton.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
-           // connectButton.setEnabled(true);
-            name.setText(context.getString(R.string.device_name_formatted, tracker.getDevice().getName()));
-            mac.setText(context.getString(R.string.device_mac_addr_formatted, tracker.getDevice().getAddress()));
-
             String stateStr = "";
             switch(tracker.getState()) {
                 case UNKNOWN:
                     stateStr = context.getString(R.string.unknown);
+                    setEnabledToButtons(true);
                     break;
-                case GEOMETRY_NOT_SET:
-                    stateStr = context.getString(R.string.geometry_is_not_set);
+                case CONNECTING:
+                    stateStr = context.getString(R.string.connecting);
+                    setEnabledToButtons(false);
+                    break;
+                case DISCONNECTING:
+                    stateStr = context.getString(R.string.disconnecting);
+                    setEnabledToButtons(false);
+                    break;
+                case READING_GEOMETRY:
+                    stateStr = context.getString(R.string.reading_geometry);
+                    setEnabledToButtons(false);
+                    break;
+                case SENDING_GEOMETRY:
+                    stateStr = context.getString(R.string.sending_geometry);
+                    setEnabledToButtons(false);
                     break;
                 case GEOMETRY_IS_SET:
                     stateStr = context.getString(R.string.geometry_is_set);
+                    setEnabledToButtons(true);
+                    break;
+                case GEOMETRY_NOT_SET:
+                    stateStr = context.getString(R.string.geometry_is_not_set);
+                    setEnabledToButtons(true);
+                    break;
+                case SUBSCRIBING_NOTIFICATION:
+                    stateStr = context.getString(R.string.enabling_notify);
+                    setEnabledToButtons(false);
                     break;
                 case RECEIVING_COORDINATES:
                     stateStr = context.getString(R.string.receiving_coordinates);
+                    setEnabledToButtons(true);
+                    break;
+                case NOT_RECEIVING_COORDINATES:
+                    stateStr = context.getString(R.string.not_receiving_coordinates);
+                    setEnabledToButtons(true);
                     break;
             }
             state.setText(context.getString(R.string.device_state, stateStr.toLowerCase()));
+            connected.setText((tracker.isConnected()) ? R.string.connected : R.string.disconnected);
+
+            if(tracker.getState().equals(PositionTracker.State.CONNECTING)) {
+                connectButton.setText(R.string.connecting);
+            } else if(tracker.getState().equals(PositionTracker.State.DISCONNECTING)) {
+                connectButton.setText(R.string.disconnecting);
+            } else {
+                connectButton.setText((tracker.isConnected()) ? R.string.disconnect : R.string.connect);
+            }
+
+            name.setText(context.getString(R.string.device_name_formatted, tracker.getDevice().getName()));
+            mac.setText(context.getString(R.string.device_mac_addr_formatted, tracker.getDevice().getAddress()));
             background.setBackgroundResource(tracker.getColorDrawable());
-            //sendGeometry.setEnabled(true);
             if(tracker.isConnected())
-                sendGeometry.setVisibility((PreferenceManager.isUserAdmin()) ? View.VISIBLE : View.INVISIBLE);
+                sendGeometryButton.setVisibility((PreferenceManager.isUserAdmin()) ? View.VISIBLE : View.INVISIBLE);
             else
-                sendGeometry.setVisibility(View.INVISIBLE);
+                sendGeometryButton.setVisibility(View.INVISIBLE);
+        }
+
+        private void setEnabledToButtons(boolean enabled) {
+            connectButton.setEnabled(enabled);
+            sendGeometryButton.setEnabled(enabled);
         }
 
         @Override
@@ -104,21 +144,15 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 case R.id.connectButton:
                     if(tracker.isConnected()) {
                         // disconnect
-                        connectButton.setText(R.string.disconnecting);
-                        //connectButton.setEnabled(false);
                         scanner.disconnectFromDevice(tracker.getDevice());
                     } else {
                         // connect
-                        //connectButton.setEnabled(false);
-                        boolean result = scanner.connectToDevice(tracker.getDevice(), context);
-                        if(result) {
-                            connectButton.setText(R.string.connecting);
-                        }
+                        scanner.connectToDevice(tracker.getDevice(), context);
                     }
                     break;
                 case R.id.sendGeometryButton:
                     scanner.sendGeometryToTracker(tracker.getDevice());
-                    //sendGeometry.setEnabled(false);
+                    pendingSendGeometry = true;
                     break;
             }
         }
@@ -268,6 +302,17 @@ public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     e.setState(tracker.getState());
                     notifyItemChanged(devices.indexOf(e));
                 });
+
+        // show result after send geometry operation
+        if(pendingSendGeometry) {
+            pendingSendGeometry = false;
+
+            if(tracker.getState().equals(PositionTracker.State.GEOMETRY_IS_SET)) {
+                Toast.makeText(context, R.string.geometry_was_successfully_set, Toast.LENGTH_LONG).show();
+            } else if(tracker.getState().equals(PositionTracker.State.GEOMETRY_NOT_SET)) {
+                Toast.makeText(context, R.string.geometry_was_not_successfully_set, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private void handleScanningState(Intent intent) {

@@ -14,4 +14,6 @@
 
     <color name="colorBaseStationMaster">#7f59cc</color>
     <color name="colorBaseStationSlave">#000000</color>
+
+    <color name="colorButtonDisabled">#505050</color>
 </resources>

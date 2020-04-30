@@ -57,4 +57,8 @@
     <string name="another_devices_are_threed_trackers">Ostatní zařízení jsou 3D trackery.</string>
     <string name="geometry_was_successfully_set">Geometrie byla úspěšně nastavena.</string>
     <string name="geometry_was_not_successfully_set">Geometrie nebyla úspěšně nastavena.</string>
+    <string name="reading_geometry">Čtení geometrie</string>
+    <string name="sending_geometry">Odesílání geometrie</string>
+    <string name="enabling_notify">Aktivování notify</string>
+    <string name="not_receiving_coordinates">Nepřijímání souřadnic</string>
 </resources>

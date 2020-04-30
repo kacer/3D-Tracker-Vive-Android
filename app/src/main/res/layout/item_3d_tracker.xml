@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:visibility="invisible"
             app:cornerRadius="@dimen/button_corner_radius"
-            app:icon="@drawable/ic_matrix"
+            app:icon="@drawable/ic_matrix_white"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

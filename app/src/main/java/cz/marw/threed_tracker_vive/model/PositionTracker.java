@@ -20,7 +20,16 @@ public class PositionTracker implements Parcelable {
     private State state = State.UNKNOWN;
 
     public enum State {
-        UNKNOWN, GEOMETRY_NOT_SET, GEOMETRY_IS_SET, RECEIVING_COORDINATES
+        UNKNOWN,
+        CONNECTING,
+        DISCONNECTING,
+        READING_GEOMETRY,
+        SENDING_GEOMETRY,
+        GEOMETRY_NOT_SET,
+        GEOMETRY_IS_SET,
+        SUBSCRIBING_NOTIFICATION,
+        RECEIVING_COORDINATES,
+        NOT_RECEIVING_COORDINATES
     }
 
     /**

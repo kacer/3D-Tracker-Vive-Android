@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity
                 super.onBackPressed();
             } else {
                 openFragment(discoveryFragment);
+                navigationView.setCheckedItem(R.id.nav_trackers);
             }
         }
     }
