@@ -57,8 +57,13 @@ public class BaseStation extends Entity {
             data[i + 7] = texCoords[texCoordsIndex++];
         }
 
-        System.out.println("Vertices count: " + vertices.length + " Normals count: " +
+        /*System.out.println("Vertices count: " + vertices.length + " Normals count: " +
                 normals.length + " Texture coordinates count: " + texCoords.length);
+
+        for(int i = 0; i < 10; i++) {
+            System.out.println("v " + vertices[i] + " vn " + normals[i] + " vt " + texCoords[i] +
+                    " f " + indices[i]);
+        }*/
 
         GLBuffers.Attributes[] attributes = new GLBuffers.Attributes[] {
                 new GLBuffers.Attributes("inPosition", 3),

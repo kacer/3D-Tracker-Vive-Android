@@ -136,10 +136,6 @@ public class GeometryFragment extends Fragment {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/*");
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, ExternalStorage.getRootDirectoryAsContentUri());
-        }*/
-
         startActivityForResult(intent, OPEN_STORAGE_REQ_CODE);
     }
 

@@ -86,7 +86,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
                     Geometry.getGeometry().get(0).getRotationMatrix().getRow(2).getAsVec3D()
             ));
             baseStation0.pushModelMatrix(new Mat4Transl(Geometry.getGeometry().get(0).getOrigin().getAsVec3D()));
-            //baseStation0.pushModelMatrix(new Mat4Transl(0, 0, 0.15));
             baseStation0.pushModelMatrix(rotation);
             baseStation0.pushModelMatrix(stationsScale);
 

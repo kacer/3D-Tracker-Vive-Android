@@ -10,7 +10,6 @@ import android.view.ScaleGestureDetector;
 public class SceneGLSurfaceView extends GLSurfaceView {
 
     private static final int INVALID_POINTER_ID = -1;
-    private static final double ANGLE_MULTIPLIER = 1.35;
     private double previousX;
     private double previousY;
     private boolean scaleStarted;
