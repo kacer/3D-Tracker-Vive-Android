@@ -4,9 +4,6 @@
     <string name="app_year_created">©2020</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="nav_about_app">About app</string>
     <string name="action_settings">Settings</string>
     <string name="connected">Connected</string>
@@ -54,8 +51,10 @@
     <string name="change_background">Change background</string>
     <string name="device_does_not_support_opengl">This device does not support OpenGL 3.0 and therefore positions cannot be rendered.</string>
     <string name="info">Info</string>
-    <string name="master_base_station">Base Station master - c</string>
-    <string name="slave_base_station">Base Station slave - b</string>
+    <string name="master_base_station">Base Station master - b</string>
+    <string name="slave_base_station">Base Station slave - c</string>
     <string name="length_of_axis_is_one_meter">The length of the axis is 1 meter.</string>
     <string name="another_devices_are_threed_trackers">Other devices are 3D trackers.</string>
+    <string name="geometry_was_successfully_set">The geometry was successfully set.</string>
+    <string name="geometry_was_not_successfully_set">The geometry was not successfully set.</string>
 </resources>
